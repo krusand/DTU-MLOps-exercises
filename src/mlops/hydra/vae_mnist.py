@@ -17,9 +17,10 @@ from torchvision.datasets import MNIST
 from torchvision.utils import save_image
 import hydra
 
-@hydra.main(config_name="config.yaml")
-def main(cfg):
-    
+
+@hydra.main(version_base=None, config_path="conf", config_name="config")
+def main(cfg_exp):
+    cfg = cfg_exp.experiment
     # Model Hyperparameters
     dataset_path = "~/data/preprocessed"
     cuda = torch.cuda.is_available()
