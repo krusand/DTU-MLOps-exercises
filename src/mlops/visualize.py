@@ -1,0 +1,58 @@
+import matplotlib.pyplot as plt
+import torch
+from model import MyAwesomeModel
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from torch import nn
+
+from data import corrupt_mnist
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+
+
+def visualize(model_checkpoint: str) -> None:
+    """
+    Visualize the embeddings of the last layer in the NN using TSNE and PCA.
+    PCA is used if NN has more than 500 outputs in the last layer.
+
+    Parameters:
+        model_checkpoint (str): The path to the model state_dict
+
+    Returns:
+        None
+    """
+
+    model = MyAwesomeModel().to(DEVICE)
+    model.load_state_dict(torch.load(model_checkpoint))
+    model.eval()
+    model.fc4 = nn.Identity()  # Disable last layer feeding into softmax
+
+    _, test_set = corrupt_mnist()
+    test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=32)
+
+    embeddings, targets = [], []
+    with torch.inference_mode():
+        for images, labels in test_dataloader:
+            images, labels = images.to(DEVICE), labels.to(DEVICE)
+            predictions = model(images)
+            embeddings.append(predictions)
+            targets.append(labels)
+        embeddings = torch.cat(embeddings).cpu().numpy()
+        targets = torch.cat(targets).cpu().numpy()
+
+    if embeddings.shape[1] > 500:  # Use PCA for initial for large embeddings
+        pca = PCA(n_components=100)
+        embeddings = pca.fit_transform(embeddings)
+    tsne = TSNE(n_components=2)
+    embeddings = tsne.fit_transform(embeddings)
+
+    plt.figure(figsize=(10, 10))
+    for i in range(10):
+        mask = targets == i
+        plt.scatter(embeddings[mask, 0], embeddings[mask, 1], label=str(i))
+    plt.legend()
+    plt.savefig("reports/figures/embedding_visualization.png")
+
+
+if __name__ == "__main__":
+    visualize(model_checkpoint="models/s1_model.pt")

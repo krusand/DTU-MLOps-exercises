@@ -7,9 +7,8 @@ RUN apt update && \
 
 COPY . .
 
-
 WORKDIR / 
 ENV UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/uv uv sync
 
-ENTRYPOINT ["uv", "run", "src/mlops/train.py"]
+ENTRYPOINT ["uv", "run", "src/mlops/evaluate.py"]
