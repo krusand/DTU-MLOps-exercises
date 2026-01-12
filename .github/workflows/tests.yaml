@@ -8,9 +8,11 @@ on:
 
 jobs:
   build:
-
-    runs-on: [ubuntu-latest, macos-latest, windows-latest]
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+    matrix:
+      os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+      python-version: ["3.10", "3.11"]
     steps:
     - name: Checkout
       uses: actions/checkout@v5
@@ -27,3 +29,6 @@ jobs:
     - name: Test with pytest
       run: |
         uv run pytest -v
+      
+      with:
+        python-version: ${{ matrix.python-version }}
