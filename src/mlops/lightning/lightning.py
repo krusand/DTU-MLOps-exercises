@@ -61,6 +61,7 @@ if __name__ == '__main__':
     train = torch.utils.data.DataLoader(train, num_workers=4, persistent_workers=True)
     test = torch.utils.data.DataLoader(test, num_workers=4, persistent_workers=True)
 
+
     trainer = Trainer(max_epochs=10, limit_train_batches=0.2)
 
     trainer.fit(model=model, train_dataloaders=train, val_dataloaders=test)

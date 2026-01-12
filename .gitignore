@@ -1,5 +1,7 @@
 *.pt
+*.pth
 docs/site/
+wandb
 
 # test cache
 manual_test/
