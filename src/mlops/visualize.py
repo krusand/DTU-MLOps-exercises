@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from model import Mnist_clf
+from mlops.model import Mnist_clf
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from torch import nn

@@ -1,5 +1,5 @@
 import torch
-from model import Mnist_clf
+from mlops.model import Mnist_clf
 
 from data import corrupt_mnist
 

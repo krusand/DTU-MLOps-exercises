@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import torch
 import typer
-from model import Mnist_clf
+from typing import Annotated
 from torch import nn
 from tqdm import tqdm
 
-from data import corrupt_mnist
+from mlops.data import corrupt_mnist
+from mlops.model import Mnist_clf
 
 DEVICE = torch.device(
     "cuda"
@@ -17,14 +18,18 @@ app = typer.Typer()
 
 
 @app.command()
-def train(lr: float = 1e-3) -> None:
+def train(
+        lr: Annotated[float, typer.Option("--learning-rate", "-lr")] = 1e-3, 
+        n_epochs: Annotated[int, typer.Option("--n-epochs", "-ne")] = 10,
+        output: Annotated[str, typer.Option("--output", "-o")] = "models/model.pt"
+    ):
     """
     Trains the model and saves it to the models directory.
     Additionally saves a plot of training loss pr. epoch
 
     Parameters:
         lr (float): Learning rate for optimizer
-
+        n_epochs (int): Number of epochs to train model
     Returns:
         None
     """
@@ -38,10 +43,8 @@ def train(lr: float = 1e-3) -> None:
         model.parameters(), lr=lr
     )  # AdamW is faster optimizer compared to Adam/SGD
 
-    epochs = 3
-
     train_losses = []
-    for _ in tqdm(range(epochs)):
+    for _ in tqdm(range(n_epochs)):
         model.train()
         batch_loss = 0
         for images, labels in train_dataloader:
@@ -53,12 +56,11 @@ def train(lr: float = 1e-3) -> None:
             loss.backward()
             optimizer.step()
             batch_loss += loss.item()
-
         train_losses.append(batch_loss)
 
-    torch.save(model.state_dict(), "models/s1_model.pt")
+    torch.save(model.state_dict(), output)
 
-    plt.plot(range(0, epochs), train_losses)
+    plt.plot(range(0, n_epochs), train_losses)
     plt.title("Training loss")
     plt.savefig("reports/figures/training_loss.png")
 
