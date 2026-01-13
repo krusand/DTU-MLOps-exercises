@@ -11,4 +11,3 @@ with profile(activities=[ProfilerActivity.CPU], record_shapes=True, profile_memo
 
 print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
 print(prof.key_averages(group_by_input_shape=True).table(sort_by="cpu_time_total", row_limit=30))
-

@@ -8,4 +8,3 @@ for i in range(10000):
     logger.error(f"{i} - Loguru logger")
     logger.critical(f"{i} - Loguru logger")
     logger.info(f"{i} - Loguru logger")
-

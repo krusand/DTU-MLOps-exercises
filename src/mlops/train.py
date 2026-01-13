@@ -19,7 +19,7 @@ app = typer.Typer()
 
 @app.command()
 def train(
-        lr: Annotated[float, typer.Option("--learning-rate", "-lr")] = 1e-3, 
+        lr: Annotated[float, typer.Option("--learning-rate", "-lr")] = 1e-3,
         n_epochs: Annotated[int, typer.Option("--n-epochs", "-ne")] = 10,
         output: Annotated[str, typer.Option("--output", "-o")] = "models/model.pt"
     ):

@@ -43,10 +43,10 @@ class Model(LightningModule):
         img, target = batch
         y_pred = self(img)
         return self.loss_fn(y_pred, target)
-    
+
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=1e-3)
-    
+
 if __name__ == '__main__':
     model = Model()
     print(f"Model architecture: {model}")
@@ -65,4 +65,3 @@ if __name__ == '__main__':
     trainer = Trainer(max_epochs=10, limit_train_batches=0.2)
 
     trainer.fit(model=model, train_dataloaders=train, val_dataloaders=test)
-    
