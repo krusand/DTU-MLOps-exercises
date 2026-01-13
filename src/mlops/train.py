@@ -1,15 +1,20 @@
 import matplotlib.pyplot as plt
 import torch
 import typer
-from model import MyAwesomeModel
+from model import Mnist_clf
 from torch import nn
 from tqdm import tqdm
 
 from data import corrupt_mnist
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 app = typer.Typer()
+
 
 @app.command()
 def train(lr: float = 1e-3) -> None:
@@ -24,12 +29,14 @@ def train(lr: float = 1e-3) -> None:
         None
     """
 
-    model = MyAwesomeModel().to(DEVICE)
+    model = Mnist_clf().to(DEVICE)
     train_set, _ = corrupt_mnist()
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=32)
 
     criterion = nn.NLLLoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)  # AdamW is faster optimizer compared to Adam/SGD
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=lr
+    )  # AdamW is faster optimizer compared to Adam/SGD
 
     epochs = 3
 

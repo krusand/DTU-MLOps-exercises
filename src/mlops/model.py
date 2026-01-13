@@ -2,7 +2,7 @@ from torch import nn
 from torch.nn.functional import log_softmax, relu
 
 
-class MyAwesomeModel(nn.Module):
+class Mnist_clf(nn.Module):
     """My awesome model."""
 
     def __init__(self) -> None:
@@ -27,6 +27,6 @@ class MyAwesomeModel(nn.Module):
 
 
 if __name__ == "__main__":
-    model = MyAwesomeModel()
+    model = Mnist_clf()
     print(f"Model architecture: {model}")
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")

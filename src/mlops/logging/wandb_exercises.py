@@ -1,18 +1,28 @@
-
-
 import matplotlib.pyplot as plt
 import torch
 import typer
 import wandb
 from mlops.data import corrupt_mnist
-from mlops.model import MyAwesomeModel
+from mlops.model import Mnist_clf
 from dotenv import load_dotenv
+
 load_dotenv()
 import os
-api_key = os.getenv("WANDB_API_KEY")
-from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+api_key = os.getenv("WANDB_API_KEY")
+from sklearn.metrics import (
+    RocCurveDisplay,
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 1) -> None:
@@ -24,7 +34,7 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 1) -> None:
         config={"lr": lr, "batch_size": batch_size, "epochs": epochs},
     )
 
-    model = MyAwesomeModel().to(DEVICE)
+    model = Mnist_clf().to(DEVICE)
     train_set, _ = corrupt_mnist()
 
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)
@@ -53,11 +63,20 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 1) -> None:
                 print(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
 
                 # add a plot of the input images
-                images = wandb.Image(img[0].squeeze(1).detach().cpu(), caption="Input images", mode="L")
+                images = wandb.Image(
+                    img[0].squeeze(1).detach().cpu(), caption="Input images", mode="L"
+                )
                 wandb.log({"images": images})
 
                 # add a plot of histogram of the gradients
-                grads = torch.cat([p.grad.flatten() for p in model.parameters() if p.grad is not None], 0)
+                grads = torch.cat(
+                    [
+                        p.grad.flatten()
+                        for p in model.parameters()
+                        if p.grad is not None
+                    ],
+                    0,
+                )
                 wandb.log({"gradients": wandb.Histogram(grads.detach().cpu())})
 
         # add a custom matplotlib plot of the ROC curves
@@ -76,22 +95,27 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 1) -> None:
 
         wandb.log({"roc": wandb.Image(plt)})
         plt.close()  # close the plot to avoid memory leaks and overlapping figures
-    
+
     final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
     final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
     final_recall = recall_score(targets, preds.argmax(dim=1), average="weighted")
     final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
-
 
     torch.save(model.state_dict(), "model.pth")
     artifact = wandb.Artifact(
         name="corrupt_mnist_model",
         type="model",
         description="A model trained to classify corrupt MNIST images",
-        metadata={"accuracy": final_accuracy, "precision": final_precision, "recall": final_recall, "f1": final_f1},
+        metadata={
+            "accuracy": final_accuracy,
+            "precision": final_precision,
+            "recall": final_recall,
+            "f1": final_f1,
+        },
     )
     artifact.add_file("model.pth")
     run.log_artifact(artifact)
+
 
 if __name__ == "__main__":
     typer.run(train)

@@ -1,10 +1,15 @@
 import torch
-from model import MyAwesomeModel
+from model import Mnist_clf
 
 from data import corrupt_mnist
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 print(DEVICE)
+
 
 def evaluate(model_checkpoint: str) -> None:
     """Evaluate a trained model."""
@@ -12,7 +17,7 @@ def evaluate(model_checkpoint: str) -> None:
     print(model_checkpoint)
 
     # TODO: Implement evaluation logic here
-    model = MyAwesomeModel().to(DEVICE)
+    model = Mnist_clf().to(DEVICE)
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()
     _, test_set = corrupt_mnist()

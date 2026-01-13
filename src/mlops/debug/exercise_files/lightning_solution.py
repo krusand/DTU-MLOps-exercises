@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 
-class MyAwesomeModel(pl.LightningModule):
+class Mnist_clf(pl.LightningModule):
     """My awesome model."""
 
     def __init__(self) -> None:
@@ -40,7 +40,7 @@ class MyAwesomeModel(pl.LightningModule):
 
 
 if __name__ == "__main__":
-    model = MyAwesomeModel()
+    model = Mnist_clf()
     print(f"Model architecture: {model}")
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
 

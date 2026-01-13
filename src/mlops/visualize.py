@@ -1,13 +1,17 @@
 import matplotlib.pyplot as plt
 import torch
-from model import MyAwesomeModel
+from model import Mnist_clf
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from torch import nn
 
 from data import corrupt_mnist
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 def visualize(model_checkpoint: str) -> None:
@@ -22,7 +26,7 @@ def visualize(model_checkpoint: str) -> None:
         None
     """
 
-    model = MyAwesomeModel().to(DEVICE)
+    model = Mnist_clf().to(DEVICE)
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()
     model.fc4 = nn.Identity()  # Disable last layer feeding into softmax

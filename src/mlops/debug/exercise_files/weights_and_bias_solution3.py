@@ -3,10 +3,20 @@ import torch
 import typer
 import wandb
 from my_project.data import corrupt_mnist
-from my_project.model import MyAwesomeModel
-from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
+from my_project.model import Mnist_clf
+from sklearn.metrics import (
+    RocCurveDisplay,
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 5) -> None:
@@ -18,7 +28,7 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 5) -> None:
         config={"lr": lr, "batch_size": batch_size, "epochs": epochs},
     )
 
-    model = MyAwesomeModel().to(DEVICE)
+    model = Mnist_clf().to(DEVICE)
     train_set, _ = corrupt_mnist()
 
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)
@@ -51,7 +61,14 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 5) -> None:
                 wandb.log({"images": images})
 
                 # add a plot of histogram of the gradients
-                grads = torch.cat([p.grad.flatten() for p in model.parameters() if p.grad is not None], 0)
+                grads = torch.cat(
+                    [
+                        p.grad.flatten()
+                        for p in model.parameters()
+                        if p.grad is not None
+                    ],
+                    0,
+                )
                 wandb.log({"gradients": wandb.Histogram(grads)})
 
         # add a custom matplotlib plot of the ROC curves
@@ -83,7 +100,12 @@ def train(lr: float = 0.001, batch_size: int = 32, epochs: int = 5) -> None:
         name="corrupt_mnist_model",
         type="model",
         description="A model trained to classify corrupt MNIST images",
-        metadata={"accuracy": final_accuracy, "precision": final_precision, "recall": final_recall, "f1": final_f1},
+        metadata={
+            "accuracy": final_accuracy,
+            "precision": final_precision,
+            "recall": final_recall,
+            "f1": final_f1,
+        },
     )
     artifact.add_file("model.pth")
     run.log_artifact(artifact)
