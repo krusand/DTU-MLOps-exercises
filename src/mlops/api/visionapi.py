@@ -47,7 +47,7 @@ async def cv_model(data: UploadFile = File(...), h: int = 28, w: int = 28):
     img = cv2.imread("image.jpg")
     res = cv2.resize(img, (h,w))
     cv2.imwrite("image_resized.jpg", res)
-    
+
     response = {
         "input": data,
         "message": HTTPStatus.OK.phrase,

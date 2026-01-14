@@ -83,5 +83,3 @@ async def cv_model(data: UploadFile = File(...), h: int = 28, w: int = 28):
         "output": FileResponse('image_resize.jpg')
     }
     return response
-
-
